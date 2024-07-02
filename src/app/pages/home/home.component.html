@@ -17,7 +17,12 @@
       <ul class="todo-list">
         <li *ngFor="let task of tasks(); index as i">
           <div class="view">
-            <input class="toggle" type="checkbox" />
+            <input
+              class="toggle"
+              type="checkbox"
+              [checked]="task.completed"
+              (change)="updateTask(i)"
+            />
             <label>{{ task.title }}</label>
             <button class="destroy" (click)="deleteTask(i)"></button>
           </div>
@@ -26,7 +31,9 @@
       </ul>
     </section>
     <footer class="footer">
-      <span class="todo-count"><strong>0</strong> item left</span>
+      <span class="todo-count"
+        ><strong>{{ tasks().length }}</strong> items</span
+      >
       <ul class="filters">
         <li>
           <a routerLink="/" class="selected">All</a>
