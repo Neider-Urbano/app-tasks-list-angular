@@ -1,4 +1,5 @@
 import { Component, signal } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
 import { Task } from 'src/app/models/task.model';
 
 @Component({
@@ -7,6 +8,11 @@ import { Task } from 'src/app/models/task.model';
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent {
+  newTaskControl = new FormControl('', {
+    nonNullable: true,
+    validators: [Validators.required],
+  });
+
   tasks = signal<Task[]>([
     {
       id: Date.now(),
@@ -20,10 +26,14 @@ export class HomeComponent {
     },
   ]);
 
-  changeHandler(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const newTask = input.value;
-    this.addTask(newTask);
+  changeHandler() {
+    if (this.newTaskControl.valid) {
+      const newTask = this.newTaskControl.value.trim();
+      if (newTask !== '') {
+        this.addTask(newTask);
+        this.newTaskControl.setValue('');
+      }
+    }
   }
 
   addTask(title: string) {
@@ -36,22 +46,18 @@ export class HomeComponent {
   }
 
   deleteTask(index: number) {
-    this.tasks.update((tasks) =>
-      tasks.filter((task, position) => position !== index)
-    );
+    this.tasks.mutate((state) => {
+      state.splice(index, 1);
+    });
   }
 
   updateTask(index: number) {
-    this.tasks.update((tasks) => {
-      return tasks.map((task, position) => {
-        if (position === index) {
-          return {
-            ...task,
-            completed: !task.completed,
-          };
-        }
-        return task;
-      });
+    this.tasks.mutate((state) => {
+      const currentTask = state[index];
+      state[index] = {
+        ...currentTask,
+        completed: !currentTask.completed,
+      };
     });
   }
 }
