@@ -32,8 +32,10 @@
     </section>
     <footer class="footer">
       <span class="todo-count"
-        ><strong>{{ tasks().length }}</strong> items</span
-      >
+        ><strong>{{ tasks().length }}</strong>
+        <span *ngIf="tasks().length > 1; else elseItem"> items</span>
+        <ng-template #elseItem> item</ng-template>
+      </span>
       <ul class="filters">
         <li>
           <a routerLink="/" class="selected">All</a>
