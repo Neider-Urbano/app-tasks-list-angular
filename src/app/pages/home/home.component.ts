@@ -1,6 +1,12 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { Task } from 'src/app/models/task.model';
+
+export enum FilterTypes {
+  all = 'all',
+  pending = 'pending',
+  completed = 'completed',
+}
 
 @Component({
   selector: 'app-home',
@@ -25,6 +31,29 @@ export class HomeComponent {
       completed: false,
     },
   ]);
+
+  FilterTypes = FilterTypes;
+  filterState = signal<FilterTypes>(FilterTypes.all);
+
+  tasksByFilter = computed(() => {
+    const filter = this.filterState();
+    const tasks = this.tasks();
+    if (filter == FilterTypes.completed) {
+      return tasks.filter((task) => task.completed);
+    }
+    if (filter == FilterTypes.pending) {
+      return tasks.filter((task) => !task.completed);
+    }
+    return tasks;
+  });
+
+  changeFilter(filter: FilterTypes) {
+    this.filterState.set(filter);
+  }
+
+  isSelectFilter(filter: FilterTypes) {
+    return this.filterState() == filter;
+  }
 
   changeHandler() {
     if (this.newTaskControl.valid) {
