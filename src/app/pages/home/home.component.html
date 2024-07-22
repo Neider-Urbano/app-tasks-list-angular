@@ -40,7 +40,16 @@
         </li>
       </ul>
     </section>
-    <footer class="footer">
+    <ng-template #notTasks>
+      <footer class="footer">
+        <span>Crea tu primer tarea</span>
+      </footer>
+    </ng-template>
+
+    <footer
+      class="footer"
+      *ngIf="tasksByFilter().length > 0 || tasks().length > 0; else notTasks"
+    >
       <span class="todo-count"
         ><strong>{{ tasksByFilter().length }}</strong>
         <span *ngIf="tasksByFilter().length > 1; else elseItem"> items</span>
